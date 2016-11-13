@@ -2,24 +2,32 @@
 
 const NODE_ENV = process.env.NODE_ENV || 0;
 const webpack = require('webpack');
+const rimraf = require('rimraf');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
+const ExtractTextPlugin = require('extract-text-webpack-plugin');
+
+function addHash(template, hash) {
+  return NODE_ENV == 1 ?
+      template.replace(/\.[^.]+$/, `.[${hash}]$&`) : `${template}?hash=[${hash}]`;
+}
 
 module.exports = {
 
 	context: __dirname + '/app',
 
 	entry: {
-		main: './main'
+		main: './main',
+		styles: './styles'
 	},
 
 	output: {
 		path: __dirname + '/dist',
 		publicPath: '/',
-		filename: 'main.min.js'
+		filename: addHash('[name].min.js', 'hash')
 	},
 
 	resolve: {
-		extensions: ['', '.js']
+		extensions: ['', '.js', '.styl']
 	},
 
 	module: {
@@ -32,6 +40,10 @@ module.exports = {
 					presets: ['es2015', 'stage-0'],
 					plugins: ['transform-class-properties', 'transform-decorators-legacy']
 				}
+			},
+			{
+				test: /\.styl$/,
+				loader: ExtractTextPlugin.extract('css!stylus?resolve url')
 			}
 		]
 	},
@@ -43,7 +55,8 @@ module.exports = {
 		new HtmlWebpackPlugin({
 			filename: './index.html',
 			template: 'index.html'
-		})
+		}),
+		new ExtractTextPlugin(addHash('[name].css', 'contenthash'), {allChunks: true})
 	]
 
 };
@@ -53,7 +66,11 @@ if (NODE_ENV == 0) {
 }
 
 if (NODE_ENV == 1) {
-	module.exports.plugins.push(
+	module.exports.plugins.push({
+			apply: (compiler) => {
+				rimraf.sync(compiler.options.output.path);
+			}
+		},
 		new webpack.optimize.DedupePlugin(),
 		new webpack.optimize.OccurenceOrderPlugin(),
 		new webpack.optimize.UglifyJsPlugin({
