@@ -3,11 +3,18 @@ import React from 'react';
 export default class ContactList extends React.Component {
 
 	render() {
+		const data = this.props.list;
+		const tmpl = data.map((item, index) => {
+			return (
+				<li key={index}>
+					{item.name}
+				</li>
+			);
+		});
+
 		return (
 			<ul>
-				<li>Петров Петр</li>
-				<li>Василий Васильев</li>
-				<li>Степан Степанов</li>
+				{tmpl}
 			</ul>
 		);
 	}
