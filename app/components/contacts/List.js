@@ -1,20 +1,31 @@
 import React from 'react';
 
+import Item from './Item';
+import Empty from './Empty';
+
 export default class ContactList extends React.Component {
+
+	static propTypes = {
+		list: React.PropTypes.array.isRequired
+	};
+
+	static defaultProps = {
+		list: []
+	};
+
+
 
 	render() {
 		const data = this.props.list;
 		const tmpl = data.map((item, index) => {
 			return (
-				<li key={index}>
-					{item.name}
-				</li>
+				<Item idx={index} name={item.name} />
 			);
 		});
 
 		return (
 			<ul>
-				{tmpl}
+				{ data.length > 0 ? tmpl : <Empty />}
 			</ul>
 		);
 	}
