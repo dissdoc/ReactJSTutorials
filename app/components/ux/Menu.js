@@ -1,14 +1,14 @@
 import React from 'react';
-import { Link } from 'react-router';
+import LinkWrapper from './LinkWrapper';
 
 export default class Menu extends React.Component {
 
 	render() {
 		return (
 			<div> 
-				<Link to='/'>Список</Link>
+				<LinkWrapper to='/' onlyActiveOnIndex={true}>Список</LinkWrapper>
 				&nbsp;|&nbsp;
-				<Link to='/add'>+Добавить</Link>
+				<LinkWrapper to='/add'>+Добавить</LinkWrapper>
 				{ this.props.children }
 			</div>
 		);
